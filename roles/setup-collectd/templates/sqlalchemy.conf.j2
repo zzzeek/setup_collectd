@@ -1,0 +1,14 @@
+LoadPlugin python
+<Plugin python>
+    LogTraces true
+
+</Plugin>
+
+<Plugin python>
+    Import "sqlalchemy_collectd.server.plugin"
+
+    <Module "sqlalchemy_collectd.server.plugin">
+        listen "0.0.0.0" 25827
+
+    </Module>
+</Plugin>

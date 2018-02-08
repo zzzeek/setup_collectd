@@ -1,0 +1,17 @@
+- name: install collectd and dependencies
+  yum:
+    name: {{ item }}
+    state: present
+  become: true
+  with_items:
+    - collectd
+    - collectd-python
+    - python-pip
+
+- name: install sqlalchemy-collectd
+  shell: pip install http://github.com/sqlalchemy/sqlalchemy_collectd
+
+- name: setup conf
+  template:
+    src: sqlalchemy.conf.j2
+    dest: /etc/collect.d/sqlalchemy.conf

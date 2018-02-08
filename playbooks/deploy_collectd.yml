@@ -1,7 +1,12 @@
-- name: setup overcloud database urls
+- name: setup collectd on undercloud
   hosts:
-    - stack1
-    - stack2
+    - undercloud
+  roles:
+    - { role: setup-collectd, tags: ['setup_collectd'] }
+
+- name: setup overcloud services
+  hosts:
+    - overcloud
   roles:
     - { role: assign-plugin, tags: ['assign_plugin'] }
 

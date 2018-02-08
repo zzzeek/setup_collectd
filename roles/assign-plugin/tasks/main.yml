@@ -1,14 +1,22 @@
-- name: get undercloud ip fact
-  set_fact:
-    undercloud_ip: 10.0.0.1
-  when: "'stack1' in group_names"
+- name: install collectd in containers
+  shell:
+    docker exec -it {{ item }} pip install http://github.com/sqlalchemy/sqlalchemy_collectd
+  become: yes
+  with_items:
+    - nova_api
+    - nova_placement
+    - nova_metadata
+    - keystone
+    - keystone_cron
+    - cinder_api
+    - cinder_api_cron
+    - cinder_scheduler
+    - neutron_api
+    - neutron_l3_agent
+    - neutron_ovs_agent
+    - neutron_metadata_agent
 
-- name: get undercloud ip fact
-  set_fact:
-    undercloud_ip: 10.0.1.1
-  when: "'stack2' in group_names"
-
-- name: change DB url in keystone.conf
+- name: change DB url in conf files
   lineinfile:
     path: "{{ item }}"
     regexp: '^(connection=mysql\+pymysql://.*)$'
