@@ -1,0 +1,9 @@
+- name: setup overcloud database urls
+  hosts:
+    - stack1
+    - stack2
+  roles:
+    - { role: assign-plugin, tags: ['assign_plugin'] }
+
+
+

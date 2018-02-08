@@ -1,0 +1,24 @@
+- name: get undercloud ip fact
+  set_fact:
+    undercloud_ip: 10.0.0.1
+  when: "'stack1' in group_names"
+
+- name: get undercloud ip fact
+  set_fact:
+    undercloud_ip: 10.0.1.1
+  when: "'stack2' in group_names"
+
+- name: change DB url in keystone.conf
+  lineinfile:
+    path: "{{ item }}"
+    regexp: '^(connection=mysql\+pymysql://.*)$'
+    line: '\1&plugin=collectd&collectd_host={{ undercloud_ip }}'
+    backrefs: yes
+    backup: yes
+  become: yes
+  with_items:
+    - "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
+    - "/var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf"
+    - "/var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf"
+    - "/var/lib/config-data/puppet-generated/cinder/etc/cinder/cinder.conf"
+
