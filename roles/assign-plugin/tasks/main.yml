@@ -1,11 +1,31 @@
-- name: install sqlalchemy_collectd in containers
+- name: find cinder volume
   shell:
-    docker exec {{ item }} pip install git+http://github.com/sqlalchemy/sqlalchemy-collectd
+    docker ps | grep cinder-volume | awk '{ print $1}'
+  register: docker_find_cinder_cmd
+  become: yes
+
+- name: change DB url in conf files
+  replace:
+    path: "{{ item }}"
+    regexp: '^(connection=mysql\+pymysql://(?!.*collectd).*)$'
+    replace: '\1&plugin=collectd&collectd_host={{ undercloud_ip }}'
+    backup: yes
   become: yes
   with_items:
+    - "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
+    - "/var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf"
+    - "/var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf"
+    - "/var/lib/config-data/puppet-generated/cinder/etc/cinder/cinder.conf"
+
+- name: install sqlalchemy_collectd in containers
+  shell:
+    docker exec -u root {{ item }} pip install git+http://github.com/sqlalchemy/sqlalchemy-collectd
+  become: yes
+  with_items:
+    - "{{ docker_find_cinder_cmd.stdout }}"
     - nova_conductor
-    - nova-consoleauth
-    - nova-scheduler
+    - nova_consoleauth
+    - nova_scheduler
     - nova_placement
     - keystone
     - keystone_cron
@@ -17,17 +37,24 @@
     - neutron_ovs_agent
     - neutron_metadata_agent
 
-- name: change DB url in conf files
-  lineinfile:
-    path: "{{ item }}"
-    regexp: '^(connection=mysql\+pymysql://.*)$'
-    line: '\1&plugin=collectd&collectd_host={{ undercloud_ip }}'
-    backrefs: yes
-    backup: yes
-  become: yes
+- name: restart containers
+  shell: docker restart {{ item }}
+  become: true
   with_items:
-    - "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
-    - "/var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf"
-    - "/var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf"
-    - "/var/lib/config-data/puppet-generated/cinder/etc/cinder/cinder.conf"
+    - "{{ docker_find_cinder_cmd.stdout }}"
+    - nova_conductor
+    - nova_consoleauth
+    - nova_scheduler
+    - nova_placement
+    - keystone
+    - keystone_cron
+    - cinder_api
+    - cinder_api_cron
+    - cinder_scheduler
+    - neutron_api
+    - neutron_l3_agent
+    - neutron_ovs_agent
+    - neutron_metadata_agent
+
+
 

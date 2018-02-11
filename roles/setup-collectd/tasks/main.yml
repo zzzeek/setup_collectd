@@ -15,4 +15,20 @@
 - name: setup conf
   template:
     src: sqlalchemy.conf.j2
-    dest: /etc/collect.d/sqlalchemy.conf
+    dest: /etc/collectd.d/sqlalchemy.conf
+  become: true
+
+- name: setup firewall
+  lineinfile:
+    path: /etc/sysconfig/iptables
+    line: "-A INPUT -p udp  --dport 25827 -j ACCEPT"
+    insertafter: "-A INPUT .* --dports? 22"
+  become: true
+
+- name: restart iptables
+  systemd: 
+    name: iptables
+    state: restarted
+  become: true
+ 
+ 
