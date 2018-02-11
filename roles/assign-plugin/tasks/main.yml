@@ -5,10 +5,14 @@
   become: yes
 
 - name: change DB url in conf files
+
+TODO TODO need to write script here, this can't be done w/ one liner
+
+
   replace:
     path: "{{ item }}"
-    regexp: '^(connection=mysql\+pymysql://(?!.*collectd).*)$'
-    replace: '\1&plugin=collectd&collectd_host={{ undercloud_ip }}'
+    regexp: '^(connection=mysql\+pymysql://.*)\??(.*!(?:collectd))?$'
+    replace: '\1?\2&plugin=collectd&collectd_host={{ undercloud_ip }}'
     backup: yes
   become: yes
   with_items:
