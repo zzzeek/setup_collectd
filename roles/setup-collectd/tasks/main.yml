@@ -1,6 +1,6 @@
 - name: install collectd and dependencies
   yum:
-    name: {{ item }}
+    name: "{{ item }}"
     state: present
   become: true
   with_items:
@@ -9,7 +9,7 @@
     - python-pip
 
 - name: install sqlalchemy-collectd on undercloud
-  shell: pip install http://github.com/sqlalchemy/sqlalchemy_collectd
+  shell: pip install git+http://github.com/sqlalchemy/sqlalchemy-collectd
   become: true
 
 - name: setup conf

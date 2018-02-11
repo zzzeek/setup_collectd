@@ -1,11 +1,12 @@
 - name: install sqlalchemy_collectd in containers
   shell:
-    docker exec -it {{ item }} pip install http://github.com/sqlalchemy/sqlalchemy_collectd
+    docker exec {{ item }} pip install git+http://github.com/sqlalchemy/sqlalchemy-collectd
   become: yes
   with_items:
-    - nova_api
+    - nova_conductor
+    - nova-consoleauth
+    - nova-scheduler
     - nova_placement
-    - nova_metadata
     - keystone
     - keystone_cron
     - cinder_api
