@@ -6,9 +6,8 @@
 
 - name: install sqlalchemy_collectd in containers
   shell:
-    docker exec -u root {{ item }} pip install git+http://github.com/sqlalchemy/sqlalchemy-collectd
+    docker exec -u root {{ item }} pip install --upgrade git+http://github.com/sqlalchemy/sqlalchemy-collectd
   become: yes
-  when: false
   with_items:
     - "{{ docker_find_cinder_cmd.stdout }}"
     - nova_conductor
