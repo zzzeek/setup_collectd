@@ -8,8 +8,9 @@
     - collectd-python
     - python-pip
 
-- name: install sqlalchemy-collectd
+- name: install sqlalchemy-collectd on undercloud
   shell: pip install http://github.com/sqlalchemy/sqlalchemy_collectd
+  become: true
 
 - name: setup conf
   template:

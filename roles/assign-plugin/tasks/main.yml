@@ -1,4 +1,4 @@
-- name: install collectd in containers
+- name: install sqlalchemy_collectd in containers
   shell:
     docker exec -it {{ item }} pip install http://github.com/sqlalchemy/sqlalchemy_collectd
   become: yes
