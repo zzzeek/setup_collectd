@@ -4,6 +4,9 @@ LoadPlugin python
 
 </Plugin>
 
+# port forward:   10.19.227.59 is on hab-11 accessible
+# by undercloud
+# ssh -R 10.19.227.59:2003:localhost:2003 hab-11
 <Plugin python>
     Import "sqlalchemy_collectd.server.plugin"
 
