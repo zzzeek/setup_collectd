@@ -4,27 +4,11 @@
   register: docker_find_cinder_cmd
   become: yes
 
-- name: change DB url in conf files
-
-TODO TODO need to write script here, this can't be done w/ one liner
-
-
-  replace:
-    path: "{{ item }}"
-    regexp: '^(connection=mysql\+pymysql://.*)\??(.*!(?:collectd))?$'
-    replace: '\1?\2&plugin=collectd&collectd_host={{ undercloud_ip }}'
-    backup: yes
-  become: yes
-  with_items:
-    - "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
-    - "/var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf"
-    - "/var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf"
-    - "/var/lib/config-data/puppet-generated/cinder/etc/cinder/cinder.conf"
-
 - name: install sqlalchemy_collectd in containers
   shell:
     docker exec -u root {{ item }} pip install git+http://github.com/sqlalchemy/sqlalchemy-collectd
   become: yes
+  when: false
   with_items:
     - "{{ docker_find_cinder_cmd.stdout }}"
     - nova_conductor
@@ -40,6 +24,16 @@ TODO TODO need to write script here, this can't be done w/ one liner
     - neutron_l3_agent
     - neutron_ovs_agent
     - neutron_metadata_agent
+
+- name: change DB url in conf files
+  script: "fix_url.py {{ item }} {{ undercloud_ip }}"
+  become: yes
+  with_items:
+    - "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
+    - "/var/lib/config-data/puppet-generated/nova/etc/nova/nova.conf"
+    - "/var/lib/config-data/puppet-generated/neutron/etc/neutron/neutron.conf"
+    - "/var/lib/config-data/puppet-generated/cinder/etc/cinder/cinder.conf"
+
 
 - name: restart containers
   shell: docker restart {{ item }}
