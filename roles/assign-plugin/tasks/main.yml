@@ -9,7 +9,6 @@
     docker exec -u root {{ item }} pip install --upgrade git+http://github.com/sqlalchemy/sqlalchemy-collectd
   become: yes
   with_items:
-    - "{{ docker_find_cinder_cmd.stdout }}"
     - nova_conductor
     - nova_consoleauth
     - nova_scheduler
@@ -38,7 +37,6 @@
   shell: docker restart {{ item }}
   become: true
   with_items:
-    - "{{ docker_find_cinder_cmd.stdout }}"
     - nova_conductor
     - nova_consoleauth
     - nova_scheduler
