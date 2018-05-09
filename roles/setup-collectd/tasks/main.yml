@@ -1,9 +1,10 @@
-- name: install collectd and dependencies
+- name: install collectd and dependencies (needs centos-release-opstools on centos)
   yum:
     name: "{{ item }}"
     state: present
   become: true
   with_items:
+#     - centos-release-opstools
     - collectd
     - collectd-python
     - python-pip
@@ -26,9 +27,9 @@
   become: true
 
 - name: restart iptables
-  systemd: 
+  systemd:
     name: iptables
     state: restarted
   become: true
- 
- 
+
+
