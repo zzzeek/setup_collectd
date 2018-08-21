@@ -23,6 +23,8 @@
     - neutron_ovs_agent
     - neutron_metadata_agent
 
+# note this is no longer needed with oslo.db's connection_parameters enhancement
+# that is as of pike. see https://review.openstack.org/#/c/539035/
 - name: change DB url in conf files
   script: "fix_url.py {{ item }} {{ undercloud_ip }}"
   become: yes
