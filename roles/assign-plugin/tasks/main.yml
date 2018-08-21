@@ -25,8 +25,11 @@
 
 # note this is no longer needed with oslo.db's connection_parameters enhancement
 # that is as of pike. see https://review.openstack.org/#/c/539035/
-- name: change DB url in conf files
-  script: "fix_url.py {{ item }} {{ undercloud_ip }}"
+- name: add collectd to connection_parameters
+  lineinfile:
+    path: "{{ item }}"
+    insertafter: "^#connection_parameters ="
+    line: "connection_parameters = plugin=collectd&collectd_host={{ undercloud_ip }}"
   become: yes
   with_items:
     - "/var/lib/config-data/puppet-generated/keystone/etc/keystone/keystone.conf"
