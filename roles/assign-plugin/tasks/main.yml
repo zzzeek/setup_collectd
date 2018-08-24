@@ -1,3 +1,13 @@
+- name: get default route, assume it's the undercloud
+  shell:
+    ip route | grep -e "^default" | cut -d ' ' --fields 3
+  register: ip_route_cmd
+
+- name: set undercloud ip fact
+  set_fact:
+    undercloud_ip: "{{ ip_route_cmd.stdout_lines[0] }}"
+  
+
 - name: find cinder volume
   shell:
     docker ps | grep cinder-volume | awk '{ print $1}'
@@ -23,8 +33,6 @@
     - neutron_ovs_agent
     - neutron_metadata_agent
 
-# note this is no longer needed with oslo.db's connection_parameters enhancement
-# that is as of pike. see https://review.openstack.org/#/c/539035/
 - name: add collectd to connection_parameters
   lineinfile:
     path: "{{ item }}"
