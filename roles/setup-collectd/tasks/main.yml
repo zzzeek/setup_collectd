@@ -1,10 +1,16 @@
-- name: install collectd and dependencies (needs centos-release-opstools on centos)
+- name: install centos-release-opstools
+  yum:
+    name: centos-release-opstools
+    state: present
+  become: true
+  when: ansible_distribution == 'CentOS'
+
+- name: install collectd and dependencies
   yum:
     name: "{{ item }}"
     state: present
   become: true
   with_items:
-    - centos-release-opstools
     - collectd
     - collectd-python
     - python-pip

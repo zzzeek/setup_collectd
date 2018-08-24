@@ -1,6 +1,5 @@
 - name: get default route, assume it's the undercloud
-  shell:
-    ip route | grep -e "^default" | cut -d ' ' --fields 3
+  shell: /usr/sbin/ip route | grep -e "^default" | cut -d ' ' --fields 3
   register: ip_route_cmd
 
 - name: set undercloud ip fact
@@ -14,9 +13,10 @@
   register: docker_find_cinder_cmd
   become: yes
 
+# no pip anymore, can't even yum it. OK
 - name: install sqlalchemy_collectd in containers
   shell:
-    docker exec -u root {{ item }} pip install --upgrade git+http://github.com/sqlalchemy/sqlalchemy-collectd
+    docker exec -u root {{ item }} bash -c 'cd /tmp/; git clone http://github.com/sqlalchemy/sqlalchemy-collectd; cd sqlalchemy-collectd; python setup.py install'
   become: yes
   with_items:
     - nova_conductor
